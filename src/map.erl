@@ -2,14 +2,17 @@
 -export([create/1, read/1, update/3]).
 
 create(empty) ->
-    #{};
+    #{},
+    maps:new();
 create(any) ->
     #{12345 => "Joe Dow",
       phone => 3535,
       {office, "Деловая"} => true}.
 
 read(#{phone := Phone, {office, "Деловая"} := Office}) ->
-    {Phone, Office}.
+    {Phone, Office};
+read(Map) ->
+    maps:get(phone, Map).
 
 update(Map, _, _) when is_map(Map),
 		       Map == #{12345 => "Joe Dow"} ->
