@@ -1,6 +1,39 @@
 -module(funs).
--export([for/3]).
+-export([multiply/1,for/4,for_gen/1,triple/3]).
 
--spec for(XStart::integer(),XEnd::integer(),fun()/1) -> list().
-for(XStart, XEnd, Fun(X)) ->
+-define(TRIPLE, fun(X,List) -> [X*3|List] end).
+
+
+multiply(List) ->
+    Double = fun(X) -> X*2 end,
+    multiply(Double,List,[]).
+
+multiply(_,[],Output) ->
+    Output;
+multiply(Fun,[X|Tail],Output) ->
+    multiply(Fun,Tail,[Fun(X)|Output]).
+
+%%% ------------------
+%%% Custome 'for' loop
+%%% ------------------
+-spec for(First::integer(),Last::integer(),
+	  Fun::fun(),InitState::term()) -> term().
+for(X, X, Fun, State) ->
+    Fun(X, State);
+for(X, Y, Fun, State) ->
+    for(X+1, Y, Fun, Fun(X,State)).
+
+-spec for_gen(fun()) -> fun().
+for_gen(Statement) ->    
+    fun For(X,X,State) ->
+	    Statement(X,State);
+	For(X,Y,State) when X<Y ->
+	    For(X+1,Y,Statement(X,State));
+	For(X,Y,State) ->
+	    For(X-1,Y,Statement(X,State))
+    end.
+
+triple(First, Last, Init) ->
+    TripleFor = for_gen(?TRIPLE),
+    TripleFor(First, Last, Init).
     
