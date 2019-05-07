@@ -4,12 +4,14 @@
 -define(TRIPLE, fun(X,List) -> [X*3|List] end).
 
 
+double(X) ->
+    X*2.
+
 multiply(List) ->
-    Double = fun(X) -> X*2 end,
-    multiply(Double,List,[]).
+    multiply(fun(X) -> X*2 end,List,[]).
 
 multiply(_,[],Output) ->
-    Output;
+    lists:reverse(Output);
 multiply(Fun,[X|Tail],Output) ->
     multiply(Fun,Tail,[Fun(X)|Output]).
 
@@ -17,7 +19,7 @@ multiply(Fun,[X|Tail],Output) ->
 %%% Custome 'for' loop
 %%% ------------------
 -spec for(First::integer(),Last::integer(),
-	  Fun::fun(),InitState::term()) -> term().
+	  Statement::fun(),InitState::term()) -> term().
 for(X, X, Fun, State) ->
     Fun(X, State);
 for(X, Y, Fun, State) ->

@@ -1,6 +1,5 @@
 -module(lico).
--export([map/2,filter/2,all_keys/1,
-	 merge_to_tuple/2, triangle/1]).
+-export([map/2,filter/2,all_keys/1,triangle/1]).
 
 -spec map(fun(), list()) -> list().
 map(Fun, List) ->
@@ -13,11 +12,6 @@ filter(Fun, List) ->
 -spec all_keys([{Key::term(),Value::term()}]) -> [Key::term()].
 all_keys(KVList) ->
     [K || {K,_} <- KVList].
-
--spec merge_to_tuple([A::term()],[B::term()]) ->
-			    [{A::term(),B::term()}].
-merge_to_tuple(List1, List2) ->
-    [{X,Y} || X <- List1, Y <- List2].
 
 -spec triangle(Perimeter::integer()) ->
 		      [{integer(),integer(),integer()}].
