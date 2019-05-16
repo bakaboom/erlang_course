@@ -30,9 +30,24 @@ start_link() ->
 %% Optional keys are restart, shutdown, type, modules.
 %% Before OTP 18 tuples must be used to specify a child. e.g.
 %% Child :: {Id,StartFunc,Restart,Shutdown,Type,Modules}
+-spec init(Args :: term()) ->
+		  {ok, {SupFlags :: supervisor:sup_flags(),
+			[ChildSpec :: supervisor:child_spec()]}} |
+		  ignore.
 init([]) ->
-    {ok, {{one_for_all, 0, 1}, []}}.
+    SupFlags = #{strategy => rest_for_one, % one_for_one | one_for_all | rest_for_one | simple_one_for_one
+		 intensity => 2,           % Max number of restarts in the last 'period' seconds
+		 period => 10},            % Restart interval
 
-%%====================================================================
-%% Internal functions
-%%====================================================================
+    ChildSpecs = [#{id => session_server,               % any term
+		    start => {session, start_link, []}, % {M,F,A}
+		    restart => permanent,               % permanent | transient | temporary
+		    shutdown => 3000,                   % milliseconds | infinity | brutall_kill
+		    type => worker,                     % worker | supervisor
+		    modules => [session]},              % process - module references
+
+		  #{id => session_handler_sup,
+		    start => {session_handler_sup, start_link, []},
+		    type => supervisor}
+		 ],
+    {ok, {SupFlags, ChildSpecs}}.
